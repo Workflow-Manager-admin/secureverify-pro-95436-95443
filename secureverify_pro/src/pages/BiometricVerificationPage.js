@@ -45,11 +45,15 @@ const BiometricVerificationPage = () => {
     // Simulating biometric verification process
     setTimeout(() => {
       try {
-        // In a real app, this would be processed by a server
-        updateBiometric({
-          selfieImage,
+        // In a real app, the image would be sent to the server and we'd get back a reference
+        // Create biometric metadata (excluding the actual image data)
+        const biometricData = {
           captureDate: new Date().toISOString()
-        }, true);
+          // In a real app, this might include face detection confidence score, etc.
+        };
+        
+        // Pass only metadata to context - image is displayed locally only
+        updateBiometric(biometricData, true);
         
         navigate('/verification-status');
       } catch (error) {
