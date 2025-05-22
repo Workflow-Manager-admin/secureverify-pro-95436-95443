@@ -67,7 +67,7 @@ const SelfieCapture = ({ onCapture }) => {
     const context = canvas.getContext('2d');
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // Convert to data URL
+    // Convert to data URL (for display purposes only)
     const imageData = canvas.toDataURL('image/png');
     
     // Stop camera stream
@@ -75,7 +75,7 @@ const SelfieCapture = ({ onCapture }) => {
       stream.getTracks().forEach(track => track.stop());
     }
     
-    // Call onCapture with the image data
+    // Call onCapture with the image data (local display only)
     onCapture(imageData);
   };
 
