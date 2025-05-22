@@ -1,36 +1,29 @@
 import React from 'react';
 import './App.css';
 
+// Context Providers
+import { AuthProvider } from './context/AuthContext';
+import { VerificationProvider } from './context/VerificationContext';
+
+// Router
+import AppRouter from './routes/AppRouter';
+
+// PUBLIC_INTERFACE
+/**
+ * Main application component for SecureVerify Pro
+ * Acts as the entry point and wraps the app with necessary providers
+ * for authentication, verification state, and routing
+ */
 function App() {
   return (
-    <div className="app">
-      <nav className="navbar">
-        <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <div className="logo">
-              <span className="logo-symbol">*</span> KAVIA AI
-            </div>
-            <button className="btn">Template Button</button>
-          </div>
-        </div>
-      </nav>
-
-      <main>
-        <div className="container">
-          <div className="hero">
-            <div className="subtitle">AI Workflow Manager Template</div>
-            
-            <h1 className="title">secureverify_pro</h1>
-            
-            <div className="description">
-              Start building your application.
-            </div>
-            
-            <button className="btn btn-large">Button</button>
-          </div>
-        </div>
-      </main>
-    </div>
+    // Wrap the entire application with AuthProvider (outer)
+    // and VerificationProvider (inner) for global state management
+    <AuthProvider>
+      <VerificationProvider>
+        {/* AppRouter handles all route definitions and navigation */}
+        <AppRouter />
+      </VerificationProvider>
+    </AuthProvider>
   );
 }
 
