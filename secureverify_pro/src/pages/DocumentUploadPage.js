@@ -68,21 +68,30 @@ const DocumentUploadPage = () => {
     }
 
     try {
-      // Use FileReader to get base64 data (in real app, this would be sent to server)
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const documentData = {
-          file: e.target.result,
-          name: documentFile.name,
-          type: documentFile.type,
-          size: documentFile.size,
-          uploadDate: new Date().toISOString()
-        };
+      // In a real app, we would upload the file to a server here and get back a reference ID
+      // For this app, we'll just create metadata for localStorage
+      const documentData = {
+        name: documentFile.name,
+        type: documentFile.type,
+        size: documentFile.size,
+        uploadDate: new Date().toISOString()
+      };
 
+      // FileReader only used for preview purposes - not stored in localStorage
+      if (documentFile.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          // We're not storing reader.result in localStorage
+          // Send only the metadata to the context
+          updateDocuments(selectedDocType, documentData);
+          navigate('/biometric-verification');
+        };
+        reader.readAsDataURL(documentFile);
+      } else {
+        // For non-image files, just send the metadata
         updateDocuments(selectedDocType, documentData);
         navigate('/biometric-verification');
-      };
-      reader.readAsDataURL(documentFile);
+      }
     } catch (error) {
       console.error('Error processing document:', error);
       setError('Failed to process document. Please try again.');
