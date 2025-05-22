@@ -79,12 +79,26 @@ export const VerificationProvider = ({ children }) => {
         ? prevState.completedSteps 
         : [...prevState.completedSteps, VerificationSteps.PERSONAL_INFO];
       
+      // Create a clean copy of the information to store
+      const personalInfo = {
+        firstName: info.firstName,
+        lastName: info.lastName,
+        email: info.email,
+        dob: info.dob,
+        phone: info.phone,
+        address: info.address,
+        city: info.city,
+        state: info.state,
+        country: info.country,
+        postalCode: info.postalCode,
+        idType: info.idType,
+        idNumber: info.idNumber,
+        submittedAt: new Date().toISOString()
+      };
+      
       return {
         ...prevState,
-        personalInfo: {
-          ...prevState.personalInfo,
-          ...info
-        },
+        personalInfo,
         completedSteps,
         currentStep: VerificationSteps.DOCUMENT_UPLOAD,
         lastUpdated: new Date().toISOString()
