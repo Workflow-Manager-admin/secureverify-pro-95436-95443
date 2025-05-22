@@ -117,7 +117,7 @@ const PersonalInfoPage = () => {
   return (
     <div className="container">
       <div className="mb-6">
-        <h1 className="page-title">Personal Information</h1>
+        <h1 className="page-title">Identity Details</h1>
         <p className="text-secondary">
           Please provide your personal details for verification
         </p>
@@ -135,12 +135,24 @@ const PersonalInfoPage = () => {
           Please ensure all information matches your identification documents exactly.
         </Alert>
 
+        {submitError && (
+          <Alert type="error" className="mb-4">
+            {submitError}
+          </Alert>
+        )}
+
+        {submissionSuccess && (
+          <Alert type="success" className="mb-4">
+            Information saved successfully!
+          </Alert>
+        )}
+
         <Formik
           initialValues={initialValues}
           validationSchema={PersonalInfoSchema}
           onSubmit={handleSubmit}
         >
-          {({ values, errors, touched, handleChange, handleBlur, isSubmitting }) => (
+          {({ values, errors, touched, handleChange, handleBlur, isSubmitting, setFieldValue }) => (
             <Form>
               <div className="grid grid-cols-1 grid-cols-sm-2 gap-4">
                 <Input
@@ -154,6 +166,7 @@ const PersonalInfoPage = () => {
                   error={touched.firstName && errors.firstName}
                   required
                   icon={<FaUser />}
+                  disabled={isSubmitting}
                 />
                 
                 <Input
@@ -167,8 +180,24 @@ const PersonalInfoPage = () => {
                   error={touched.lastName && errors.lastName}
                   required
                   icon={<FaUser />}
+                  disabled={isSubmitting}
                 />
               </div>
+
+              <Input
+                id="email"
+                name="email"
+                label="Email Address"
+                type="email"
+                placeholder="Enter your email address"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.email && errors.email}
+                required
+                icon={<FaEnvelope />}
+                disabled={isSubmitting}
+              />
 
               <div className="grid grid-cols-1 grid-cols-sm-2 gap-4">
                 <Input
@@ -182,6 +211,8 @@ const PersonalInfoPage = () => {
                   error={touched.dob && errors.dob}
                   required
                   icon={<FaCalendarAlt />}
+                  disabled={isSubmitting}
+                  max={new Date(Date.now() - (18 * 365 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0]}
                 />
                 
                 <Input
@@ -195,13 +226,14 @@ const PersonalInfoPage = () => {
                   error={touched.phone && errors.phone}
                   required
                   icon={<FaPhone />}
+                  disabled={isSubmitting}
                 />
               </div>
 
               <Input
                 id="address"
                 name="address"
-                label="Address"
+                label="Street Address"
                 placeholder="Enter your street address"
                 value={values.address}
                 onChange={handleChange}
@@ -209,9 +241,10 @@ const PersonalInfoPage = () => {
                 error={touched.address && errors.address}
                 required
                 icon={<FaMapMarkerAlt />}
+                disabled={isSubmitting}
               />
 
-              <div className="grid grid-cols-1 grid-cols-sm-3 gap-4">
+              <div className="grid grid-cols-1 grid-cols-sm-2 gap-4">
                 <Input
                   id="city"
                   name="city"
@@ -222,8 +255,24 @@ const PersonalInfoPage = () => {
                   onBlur={handleBlur}
                   error={touched.city && errors.city}
                   required
+                  disabled={isSubmitting}
                 />
                 
+                <Input
+                  id="state"
+                  name="state"
+                  label="State/Province"
+                  placeholder="Enter your state or province"
+                  value={values.state}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.state && errors.state}
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 grid-cols-sm-2 gap-4">
                 <Input
                   id="country"
                   name="country"
@@ -234,6 +283,8 @@ const PersonalInfoPage = () => {
                   onBlur={handleBlur}
                   error={touched.country && errors.country}
                   required
+                  icon={<FaGlobeAmericas />}
+                  disabled={isSubmitting}
                 />
                 
                 <Input
@@ -246,26 +297,55 @@ const PersonalInfoPage = () => {
                   onBlur={handleBlur}
                   error={touched.postalCode && errors.postalCode}
                   required
+                  disabled={isSubmitting}
                 />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="idType" className="form-label">
+                  ID Type <span style={{ color: 'var(--error-red)' }}>*</span>
+                </label>
+                <select
+                  id="idType"
+                  name="idType"
+                  value={values.idType}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`form-input ${touched.idType && errors.idType ? 'error' : ''}`}
+                  required
+                  disabled={isSubmitting}
+                  style={touched.idType && errors.idType ? { borderColor: 'var(--error-red)' } : {}}
+                >
+                  {idTypeOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {touched.idType && errors.idType && (
+                  <p className="error-message">{errors.idType}</p>
+                )}
               </div>
 
               <Input
                 id="idNumber"
                 name="idNumber"
-                label="National ID Number"
-                placeholder="Enter your national ID number"
+                label={`${values.idType === 'nationalId' ? 'National ID' : values.idType === 'passport' ? 'Passport' : 'Driving License'} Number`}
+                placeholder={`Enter your ${values.idType === 'nationalId' ? 'national ID' : values.idType === 'passport' ? 'passport' : 'driving license'} number`}
                 value={values.idNumber}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 error={touched.idNumber && errors.idNumber}
                 required
                 icon={<FaIdCard />}
+                disabled={isSubmitting}
               />
 
               <div className="flex justify-between mt-6">
                 <Button 
                   variant="secondary" 
                   onClick={() => navigate('/onboarding')}
+                  disabled={isSubmitting}
                 >
                   Back
                 </Button>
@@ -275,7 +355,11 @@ const PersonalInfoPage = () => {
                   isLoading={isSubmitting}
                   disabled={isSubmitting}
                 >
-                  Continue to Document Upload
+                  {isSubmitting ? (
+                    <>
+                      <Loader size="small" /> Saving...
+                    </>
+                  ) : 'Continue to Document Upload'}
                 </Button>
               </div>
             </Form>
