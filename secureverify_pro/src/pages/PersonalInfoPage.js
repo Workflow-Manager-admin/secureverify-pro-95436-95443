@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form } from 'formik';
-import { FaUser, FaCalendarAlt, FaPhone, FaMapMarkerAlt, FaIdCard } from 'react-icons/fa';
+import { FaUser, FaCalendarAlt, FaPhone, FaMapMarkerAlt, FaIdCard, FaEnvelope, FaGlobeAmericas } from 'react-icons/fa';
 import * as Yup from 'yup';
 import Card from '../components/common/Card';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 import ProgressBar from '../components/common/ProgressBar';
+import Loader from '../components/common/Loader';
 import { useVerification } from '../context/VerificationContext';
+import { isPhoneValid, isDobValid, isAddressValid } from '../utils/validation';
 
 // Validation schema for personal information
 const PersonalInfoSchema = Yup.object().shape({
@@ -20,23 +22,35 @@ const PersonalInfoSchema = Yup.object().shape({
     .min(2, 'Last name is too short')
     .max(50, 'Last name is too long')
     .required('Last name is required'),
+  email: Yup.string()
+    .email('Invalid email address')
+    .required('Email is required'),
   dob: Yup.date()
-    .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000), 'You must be at least 18 years old')
+    .test('dob', 'You must be at least 18 years old', value => isDobValid(value))
     .required('Date of birth is required'),
   phone: Yup.string()
-    .matches(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/, 'Phone number is not valid')
+    .test('phone', 'Phone number is not valid', value => isPhoneValid(value))
     .required('Phone number is required'),
   address: Yup.string()
-    .min(10, 'Address is too short')
+    .test('address', 'Address is too short', value => isAddressValid(value))
     .required('Address is required'),
   city: Yup.string()
+    .min(2, 'City name is too short')
     .required('City is required'),
+  state: Yup.string()
+    .min(2, 'State name is too short')
+    .required('State/Province is required'),
   country: Yup.string()
     .required('Country is required'),
   postalCode: Yup.string()
+    .matches(/^[0-9a-zA-Z\s-]{3,10}$/, 'Invalid postal code format')
     .required('Postal code is required'),
   idNumber: Yup.string()
-    .required('National ID number is required')
+    .min(5, 'ID number is too short')
+    .required('National ID number is required'),
+  idType: Yup.string()
+    .oneOf(['nationalId', 'passport', 'drivingLicense'], 'Please select a valid ID type')
+    .required('ID type is required')
 });
 
 // PUBLIC_INTERFACE
@@ -47,30 +61,58 @@ const PersonalInfoSchema = Yup.object().shape({
 const PersonalInfoPage = () => {
   const navigate = useNavigate();
   const { verificationState, updatePersonalInfo, getVerificationProgress } = useVerification();
+  const [submitError, setSubmitError] = useState(null);
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
   
   // Pre-fill the form if data already exists
   const initialValues = verificationState.personalInfo || {
     firstName: '',
     lastName: '',
+    email: '',
     dob: '',
     phone: '',
     address: '',
     city: '',
+    state: '',
     country: '',
     postalCode: '',
-    idNumber: ''
+    idNumber: '',
+    idType: 'nationalId'
   };
 
   const handleSubmit = (values, { setSubmitting }) => {
+    setSubmitError(null);
+    
     try {
-      updatePersonalInfo(values);
-      navigate('/document-upload');
+      // Simulate API call delay
+      setTimeout(() => {
+        try {
+          updatePersonalInfo(values);
+          setSubmissionSuccess(true);
+          
+          // Navigate after a slight delay to show success state
+          setTimeout(() => {
+            navigate('/document-upload');
+          }, 500);
+        } catch (error) {
+          console.error('Error saving personal info:', error);
+          setSubmitError('Failed to save your information. Please try again.');
+        } finally {
+          setSubmitting(false);
+        }
+      }, 1000);
     } catch (error) {
-      console.error('Error saving personal info:', error);
-    } finally {
+      console.error('Error in form submission:', error);
+      setSubmitError('An unexpected error occurred. Please try again.');
       setSubmitting(false);
     }
   };
+
+  const idTypeOptions = [
+    { value: 'nationalId', label: 'National ID' },
+    { value: 'passport', label: 'Passport' },
+    { value: 'drivingLicense', label: 'Driving License' }
+  ];
 
   return (
     <div className="container">
