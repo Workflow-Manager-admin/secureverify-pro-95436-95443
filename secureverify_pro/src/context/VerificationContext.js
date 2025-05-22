@@ -138,16 +138,23 @@ export const VerificationProvider = ({ children }) => {
   };
 
   // Update biometric information
-  const updateBiometric = (selfieData, livenessVerified = true) => {
+  const updateBiometric = (biometricData, livenessVerified = true) => {
     setVerificationState(prevState => {
       const completedSteps = prevState.completedSteps.includes(VerificationSteps.BIOMETRIC_VERIFICATION) 
         ? prevState.completedSteps 
         : [...prevState.completedSteps, VerificationSteps.BIOMETRIC_VERIFICATION];
       
+      // Extract only metadata to store in localStorage, not the actual selfie image
+      const biometricMetadata = {
+        captureDate: biometricData.captureDate,
+        // Add a unique identifier if we need to reference this later
+        selfieId: `selfie_${Date.now()}`
+      };
+      
       return {
         ...prevState,
         biometric: {
-          selfie: selfieData,
+          selfieMetadata: biometricMetadata,
           livenessVerified
         },
         completedSteps,
