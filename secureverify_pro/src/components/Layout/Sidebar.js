@@ -129,7 +129,7 @@ const Sidebar = () => {
             </div>
             <li>
               <NavLink 
-                to="/identity-verification" 
+                to="/personal-info" 
                 className={({ isActive }) => `
                   flex items-center gap-3 py-3 px-4 rounded-md transition-all duration-200
                   ${isActive 
