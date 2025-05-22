@@ -108,3 +108,27 @@ ERROR in ./src/routes/AppRouter.js 29:0-61
 Module not found: Error: Can't resolve '../pages/AdminDashboardPage' in '/home/kavia/workspace/code-generation/secureverify-pro-95436-95443/secureverify_pro/src/routes'
 
 webpack compiled with 2 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve '../pages/AdminDashboardPage' in '/home/kavia/workspace/code-generation/secureverify-pro-95436-95443/secureverify_pro/src/routes'
+WARNING in [eslint] 
+src/components/ekyc/SelfieCapture.js
+  Line 54:6:  React Hook useEffect has a missing dependency: 'stream'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/pages/BiometricVerificationPage.js
+  Line 1:27:   'useRef' is defined but never used                      no-unused-vars
+  Line 3:37:   'FaSyncAlt' is defined but never used                   no-unused-vars
+  Line 19:11:  'verificationState' is assigned a value but never used  no-unused-vars
+
+src/pages/DocumentUploadPage.js
+  Line 3:47:  'FaUpload' is defined but never used  no-unused-vars
+
+src/pages/VerificationStatusPage.js
+  Line 2:10:   'Link' is defined but never used           no-unused-vars
+  Line 27:11:  'user' is assigned a value but never used  no-unused-vars
+
+ERROR in ./src/routes/AppRouter.js 29:0-61
+Module not found: Error: Can't resolve '../pages/AdminDashboardPage' in '/home/kavia/workspace/code-generation/secureverify-pro-95436-95443/secureverify_pro/src/routes'
+
+webpack compiled with 1 error and 1 warning
