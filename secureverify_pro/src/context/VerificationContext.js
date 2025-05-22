@@ -113,11 +113,21 @@ export const VerificationProvider = ({ children }) => {
         ? prevState.completedSteps 
         : [...prevState.completedSteps, VerificationSteps.DOCUMENT_UPLOAD];
       
+      // Extract only metadata to store in localStorage, not the actual file data
+      const documentMetadata = {
+        name: document.name,
+        type: document.type,
+        size: document.size,
+        uploadDate: document.uploadDate,
+        // Add a unique identifier if we need to reference this later
+        documentId: `doc_${Date.now()}`
+      };
+      
       return {
         ...prevState,
         documents: {
           ...prevState.documents,
-          [docType]: document,
+          [docType]: documentMetadata,
           selectedType: docType
         },
         completedSteps,
